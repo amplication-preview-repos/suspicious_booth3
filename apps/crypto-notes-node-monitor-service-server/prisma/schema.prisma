@@ -1,0 +1,52 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model MonitorLog {
+  createdAt DateTime  @default(now())
+  id        String    @id @default(cuid())
+  node      Node?     @relation(fields: [nodeId], references: [id])
+  nodeId    String?
+  status    Status?   @relation(fields: [statusId], references: [id])
+  statusId  String?
+  timestamp DateTime?
+  updatedAt DateTime  @updatedAt
+}
+
+model Node {
+  createdAt   DateTime     @default(now())
+  id          String       @id @default(cuid())
+  ipAddress   String?
+  monitorLogs MonitorLog[]
+  p2pPort     Int?
+  rpcPort     Int?
+  updatedAt   DateTime     @updatedAt
+}
+
+model ChartData {
+  createdAt DateTime                @default(now())
+  id        String                  @id @default(cuid())
+  timestamp DateTime?
+  typeField EnumChartDataTypeField?
+  updatedAt DateTime                @updatedAt
+  value     Float?
+}
+
+model Status {
+  createdAt   DateTime     @default(now())
+  id          String       @id @default(cuid())
+  lastChecked DateTime?
+  monitorLogs MonitorLog[]
+  p2pStatus   Boolean?
+  rpcStatus   Boolean?
+  updatedAt   DateTime     @updatedAt
+}
+
+enum EnumChartDataTypeField {
+  Option1
+}
